@@ -1,0 +1,39 @@
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd">
+
+    <!-- Define embedded Jetty server -->
+    <bean id="jetty" class="org.eclipse.jetty.server.Server">
+        <!-- HTTP Connector -->
+        <property name="connectors">
+            <list>
+                <bean class="org.eclipse.jetty.server.ServerConnector">
+                    <constructor-arg ref="jettyServer"/>
+                    <property name="port" value="8161"/>
+                </bean>
+            </list>
+        </property>
+    </bean>
+
+    <!-- Define ActiveMQ web context -->
+    <bean id="webContext" class="org.eclipse.jetty.webapp.WebAppContext">
+        <property name="contextPath" value="/admin"/>
+        <property name="war" value="${activemq.home}/webapps/admin.war"/>
+    </bean>
+
+    <!-- Start Jetty server -->
+    <bean id="jettyServer" class="org.eclipse.jetty.server.Server">
+        <property name="handler">
+            <bean class="org.eclipse.jetty.server.handler.HandlerCollection">
+                <property name="handlers">
+                    <list>
+                        <ref bean="webContext"/>
+                    </list>
+                </property>
+            </bean>
+        </property>
+    </bean>
+
+    <!-- Destroy the spring context on shutdown to stop Jetty -->
+    <bean class="org.apache.activemq.hooks.SpringContextHook"/>
+</beans>

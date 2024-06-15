@@ -1,0 +1,220 @@
+
+services:
+  activemq:
+    build:
+      context: /jms
+      dockerfile: Dockerfile
+    ports:
+      - "61616:61616"  # JMS port
+      - "8161:8161"
+    container_name: mq
+#    volumes:
+#      - /jms/activemq.xml:/activemq.xml
+
+  subscriber:
+    build:
+      context: client
+      dockerfile: Dockerfile
+    depends_on:
+      - activemq
+    container_name: client
+
+  backend:
+    build:
+      context: backend
+      dockerfile: Dockerfile
+    container_name: backend
+    depends_on:
+      - activemq
+    ports:
+      - 8080:8080
+
+
+  mysql:
+    build:
+      context: mysql  # path to the directory containing MySQL Dockerfile
+      dockerfile: Dockerfile
+    container_name: mysql
+    environment:
+      MYSQL_DATABASE: db
+      MYSQL_USER: user
+      MYSQL_PASSWORD: pass
+      MYSQL_ROOT_PASSWORD: pass
+    ports:
+      - "3306:3306"
+    #  frontend:
+#    image: frontend
+#    build:
+#      context: ./frontend
+#      dockerfile: Dockerfile
+#    container_name: container01
+#    ports:
+#      - 9095:9095
+#    networks:
+#      - frontend
+
+#  backend:
+#    image: critoma/linux-u20-dev-security-ism
+#    container_name: container01
+#    build: ./backend
+#    entrypoint: ["java","-jar","./app.jar", ]
+#    # Add any environment variables needed by the base image
+#    # environment:
+#    #   - VARIABLE_NAME=value
+#    # Expose ports if needed
+#    # ports:
+#    #   - "8080:8080"
+#    ports:
+#      - 8082:8082
+#    networks:
+#      - frontend
+#      - backend
+
+#  c03-mdb-openmpi:
+#    build:
+#      context: ./path_to_your_custom_code_directory
+#      dockerfile: Dockerfile
+#    container_name: c03-mdb-openmpi
+    # Add any environment variables needed by your custom code
+    # environment:
+    #   - VARIABLE_NAME=value
+    # Link this container to c02-backend or define a custom network
+    # networks:
+    #   - your_custom_network
+    # Mount volumes if needed
+    # volumes:
+    #   - ./path/on/host:/path/in/container
+    # Expose ports if needed
+    # ports:
+    #   - "8080:8080"
+
+#  c04-openmpi-openmp:
+#    image: critoma/linux-u20-dev-security-ism
+#    container_name: c04-openmpi-openmp
+    # Add any environment variables needed by the base image
+    # environment:
+    #   - VARIABLE_NAME=value
+    # Expose ports if needed
+    # ports:
+    #   - "8080:8080"
+
+#  c05-nodejs:
+#    build:
+#      context: ./path_to_your_nodejs_project
+#      dockerfile: Dockerfile
+#    container_name: c05-nodejs
+    # Add any environment variables needed by your Node.js application
+    # environment:
+    #   - VARIABLE_NAME=value
+    # Mount volumes if needed
+    # volumes:
+    #   - ./path/on/host:/path/in/container
+    # Expose ports if needed
+    # ports:
+    #   - "8080:8080"
+
+# Define networks if needed
+# networks:
+#   your_custom_network:
+#     driver: bridge
+#version: "3.8"
+#services:
+#  frontend:
+#    image: frontend
+#    build: ./frontend/
+#    ports:
+#      - 9095:9095
+#    networks:
+#      - frontend
+#
+##  moneymarket:
+##    image: moneymarket
+##    build: ./moneymarket
+##    depends_on:
+##      - mysql
+##    environment:
+##      MYSQL_HOST: mysql
+##      MYSQL_DATABASE: db
+##      MYSQL_USER: user
+##      MYSQL_PASSWORD: pass
+##      MYSQL_PORT: 3306
+##    entrypoint: ["java","-jar","./app.jar", ]
+##    ports:
+##      - 8083:8083
+##    networks:
+##      - moneymarket
+#
+#  backend:
+#    image: backend
+#    build: ./backend
+##    depends_on:
+##      - mysql
+##    environment:
+##      MYSQL_HOST: mysql
+##      MYSQL_DATABASE: db
+##      MYSQL_USER: user
+##      MYSQL_PASSWORD: pass
+##      MYSQL_PORT: 3306
+#    entrypoint: ["java","-jar","./app.jar", ]
+#    ports:
+#      - 8082:8082
+#    networks:
+#      - frontend
+#      - backend
+##      - moneymarket
+#
+
+#  mysql:
+#    image: mysql:8-oracle
+#    restart: always
+#    ports:
+#      - 3333:3306
+#    environment:
+#      MYSQL_DATABASE: db
+#      MYSQL_USER: user
+#      MYSQL_PASSWORD: pass
+#      MYSQL_ROOT_PASSWORD: pass
+#    deploy:
+#      placement:
+#        constraints: [node.role == manager]
+#      replicas: 1
+#    volumes:
+#      - mysql-data:/var/lib/mysql
+#    networks:
+#      - backend
+##      - moneymarket
+#      - database
+#
+#  rancher:
+#    privileged: true
+#    container_name: rancher
+#    restart: unless-stopped
+#    ports:
+#      - 80:80
+#      - 443:443
+#    image: rancher/rancher
+#
+#  phpmyadmin:
+#    image: phpmyadmin/phpmyadmin
+#    networks:
+#      - database
+#    environment:
+#      PMA_HOST: mysql
+#    ports:
+#      - 8080:80
+#
+#volumes:
+#  mysql-data:
+#  yacht:
+#
+## CLEAN THESE NETWORKS
+#networks:
+#  frontend:
+#  backend:
+#  rmq:
+##  moneymarket:
+#  database:
+#
+networks:
+  frontend:
+  backend:
