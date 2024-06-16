@@ -1,6 +1,7 @@
 package com.client;
 
 import org.apache.activemq.ActiveMQConnectionFactory;
+import org.apache.activemq.broker.BrokerService;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
@@ -10,10 +11,11 @@ import javax.jms.*;
 @SpringBootApplication
 public class ClientApplication {
 
-	public static void main(String[] args) throws JMSException {
+	public static void main(String[] args) throws Exception {
 		SpringApplication.run(ClientApplication.class, args);
+
 		// Create a ConnectionFactory
-		ActiveMQConnectionFactory connectionFactory = new ActiveMQConnectionFactory("tcp://activemq:61616");
+		ActiveMQConnectionFactory connectionFactory = new ActiveMQConnectionFactory("tcp://localhost:61616");
 
 		// Create a Connection
 		Connection connection = connectionFactory.createConnection();

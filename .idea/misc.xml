@@ -3,6 +3,9 @@
   <component name="ExternalStorageConfigurationManager" enabled="true" />
   <component name="FrameworkDetectionExcludesConfiguration">
     <file type="web" url="file://$PROJECT_DIR$/backend/proiect" />
+    <file type="web" url="file://$PROJECT_DIR$/broker" />
+    <file type="web" url="file://$PROJECT_DIR$/client/clientMq" />
+    <file type="web" url="file://$PROJECT_DIR$/mq/broker" />
   </component>
   <component name="ProjectRootManager" version="2" project-jdk-name="11" project-jdk-type="JavaSDK" />
   <component name="SwUserDefinedSpecifications">

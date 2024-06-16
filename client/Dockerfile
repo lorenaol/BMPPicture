@@ -23,4 +23,4 @@ RUN chmod +x gradlew
 RUN ./gradlew build -x test
 
 # Set the entry point for the application
-ENTRYPOINT ["java","-jar","./build/libs/proiect-0.1.jar"]
+ENTRYPOINT ["java","-jar","./build/libs/client-0.0.1.jar"]

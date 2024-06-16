@@ -25,7 +25,7 @@ public class JmsPublisher {
             Session session = connection.createSession(false, Session.AUTO_ACKNOWLEDGE);
 
             // Create the topic
-            Topic topic = session.createTopic("ImageTopic");
+            Topic topic = session.createTopic("YourTopicName");
 
             // Create a producer
             MessageProducer producer = session.createProducer(topic);

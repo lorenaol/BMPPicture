@@ -2,20 +2,22 @@
 FROM critoma/linux-u20-dev-security-ism
 
 # Install ActiveMQ on top of the base image
-RUN apt-get update && \
-    apt-get install -y activemq
+RUN apt-get update && apt-get -y upgrade
+RUN apt-get -y install curl
+RUN apt-get -y install default-jre
 
-# Expose ports for AMQP, MQTT, STOMP, OpenWire, and HTTP
-EXPOSE 5672 1883 61613 61616 8161
+RUN curl -O http://archive.apache.org/dist/activemq/5.16.0/apache-activemq-5.16.0-bin.tar.gz
+RUN mkdir -p /opt/apache/activemq
+RUN tar xvzf apache-activemq-5.16.0-bin.tar.gz -C /opt/apache/activemq
 
-# Optionally, you can copy a custom configuration file if needed
-COPY ./activemq.xml /var/lib/activemq/conf/activemq.xml
-COPY ./jetty.xml /var/lib/activemq/conf/jetty.xml
-COPY ./credentials.properties /var/lib/activemq/conf/credentials.properties
+WORKDIR /opt/apache/activemq/apache-activemq-5.16.0/bin
+VOLUME /opt/apache/activemq/apache-activemq-5.16.0/conf
 
+RUN echo './activemq start && tail -f /opt/apache/activemq/apache-activemq-5.16.0/data/activemq.log' > start.sh
 
+# Admin interface
+EXPOSE 8161
+# Active MQ's default port (Listen port)
+EXPOSE 61616
 
-
-
-# Start ActiveMQ
-CMD ["activemq", "console"]
+CMD ["/bin/bash", "./start.sh"]

@@ -33,4 +33,4 @@ spring:
     protocol: smtp
     test-connection: false
 server:
-  port: 8080
+  port: 8088
