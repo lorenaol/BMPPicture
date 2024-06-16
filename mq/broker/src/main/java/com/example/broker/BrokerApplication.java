@@ -12,9 +12,13 @@ public class BrokerApplication {
 		BrokerService broker = new BrokerService();
 
 // configure the broker
-		broker.addConnector("tcp://localhost:61616");
-
-		broker.start();
+//		broker.addConnector("tcp://localhost:61616");
+	String BrokerUrl = System.getenv("BROKER_URL");
+	if(BrokerUrl == null || BrokerUrl.isEmpty()) {
+		BrokerUrl = "tcp://localhost:61616";
+	}
+	broker.addConnector(BrokerUrl);
+	broker.start();
 	}
 
 //	public static void main(String[] args) throws Exception {

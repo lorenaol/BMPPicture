@@ -22,6 +22,8 @@ services:
       - 61616:61616
     networks:
       - broker-network
+    environment:
+      - BROKER_URL=tcp://0.0.0.0:61616
 
   subscriber:
     build:
@@ -29,9 +31,13 @@ services:
       dockerfile: Dockerfile
     depends_on:
       - broker
+      - encrypt
     container_name: client
     networks:
       - broker-network
+    environment:
+      - ACTIVEMQ_URL=tcp://broker:61616
+
 
   backend:
     build:
@@ -44,7 +50,30 @@ services:
       - broker-network
     ports:
       - 8088:8088
+    environment:
+      - ACTIVEMQ_URL=tcp://broker:61616
 
+
+  frontend:
+      build:
+        context: frontend
+        dockerfile: Dockerfile
+      container_name: frontend
+      ports:
+        - 9095:9095
+      networks:
+        - broker-network
+
+  encrypt:
+    build:
+      context: encrypt
+      dockerfile: Dockerfile
+    container_name: encrypt
+    environment:
+      - OMPI_ALLOW_RUN_AS_ROOT=1
+      - OMPI_ALLOW_RUN_AS_ROOT_CONFIRM=1
+    networks:
+      - broker-network
 
   mysql:
     build:
@@ -63,6 +92,7 @@ services:
 networks:
   broker-network:
     driver: bridge
+  frontend:
     #  frontend:
     #    image: frontend
     #    build:

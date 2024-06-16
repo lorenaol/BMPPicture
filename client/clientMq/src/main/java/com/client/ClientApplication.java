@@ -1,11 +1,13 @@
 package com.client;
 
 import org.apache.activemq.ActiveMQConnectionFactory;
-import org.apache.activemq.broker.BrokerService;
+
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 import javax.jms.*;
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
 
 
 @SpringBootApplication
@@ -14,8 +16,13 @@ public class ClientApplication {
 	public static void main(String[] args) throws Exception {
 		SpringApplication.run(ClientApplication.class, args);
 
+		String brokerUrl = System.getenv("ACTIVEMQ_URL");
+		if (brokerUrl == null) {
+			brokerUrl = "tcp://localhost:61616";
+		}
+
 		// Create a ConnectionFactory
-		ActiveMQConnectionFactory connectionFactory = new ActiveMQConnectionFactory("tcp://localhost:61616");
+		ActiveMQConnectionFactory connectionFactory = new ActiveMQConnectionFactory(brokerUrl);
 
 		// Create a Connection
 		Connection connection = connectionFactory.createConnection();
@@ -34,6 +41,18 @@ public class ClientApplication {
 		MessageListener listener = new MessageListener() {
 			public void onMessage(Message message) {
 				try {
+
+					var encrypted = message.getBooleanProperty("Encrypted");
+					var key = message.getStringProperty("Key");
+					var image = message.getStringProperty("Image");
+
+//					BytesMessage bytesMessage = (BytesMessage) message;
+//					byte[] imageBytes = new byte[(int) bytesMessage.getBodyLength()];
+//					bytesMessage.readBytes(imageBytes);
+
+
+					processImage(key, image);
+
 					if (message instanceof TextMessage) {
 						TextMessage textMessage = (TextMessage) message;
 						System.out.println("Received message: " + textMessage.getText());
@@ -52,6 +71,37 @@ public class ClientApplication {
 
 		// Keep the application running to receive messages
 		System.out.println("Subscriber is running...");
+	}
+
+	private static void processImage(String key, String imageString) {
+		// Command to run the encrypt executable in the encrypt container
+		String command = "./encrypt " + key + " " + imageString;
+		System.out.println(command);
+
+		try {
+			ProcessBuilder processBuilder = new ProcessBuilder("/bin/sh", "-c", command);
+			Process process = null;
+			try {
+				 process = processBuilder.start();
+			}catch (Error e) {
+				System.out.println(e.getMessage());
+			}
+
+
+			// Reading the output from the command
+			BufferedReader reader = new BufferedReader(new InputStreamReader(process.getInputStream()));
+			String line;
+			while ((line = reader.readLine()) != null) {
+				System.out.println(line);
+			}
+
+			int exitCode = process.waitFor();
+			if (exitCode != 0) {
+				System.err.println("Error: Encrypt process exited with code " + exitCode);
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
 	}
 
 

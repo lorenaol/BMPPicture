@@ -9,7 +9,7 @@ import javax.jms.*;
 @Service
 public class JmsPublisher {
 
-    private static final String BROKER_URL = "tcp://localhost:61616";  // ActiveMQ broker URL
+    private static final String BROKER_URL = System.getenv("ACTIVEMQ_URL") != null ? System.getenv("ACTIVEMQ_URL") : "tcp://localhost:61616";  // ActiveMQ broker URL
 
     public void publishImage(Image image) {
         Connection connection = null;
@@ -35,6 +35,7 @@ public class JmsPublisher {
             message.writeBytes(image.getImage().getBytes());  // Write the image bytes
             message.setStringProperty("Key", image.getKey());  // Set file name as message property
             message.setBooleanProperty("Encrypted", image.isEncrypt());
+            message.setStringProperty("Image", image.getImage());
 
             // Send the message
             producer.send(message);

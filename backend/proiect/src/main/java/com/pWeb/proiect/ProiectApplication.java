@@ -1,5 +1,7 @@
 package com.pWeb.proiect;
 
+import com.pWeb.proiect.DataModel.Image;
+import com.pWeb.proiect.Services.JmsPublisher;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
@@ -12,6 +14,13 @@ public class ProiectApplication {
 
 	public static void main(String[] args) {
 		SpringApplication.run(ProiectApplication.class, args);
+
+		JmsPublisher j4 = new JmsPublisher();
+		Image image = new Image();
+		image.setImage("adv");
+		image.setEncrypt(true);
+		image.setKey("sdv");
+		j4.publishImage(image);
 	}
 
 //	@Bean
